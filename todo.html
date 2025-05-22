@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+ :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--dark);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        #viewProfile {
+            background-color: transparent;
+            border: none;
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        #viewProfile:hover {
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        #todo {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        #todo:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        #addTodo {
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #addTodo:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        #list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .todo-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .todo-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .todo-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .todo-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .todo-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .complete-btn {
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--gray);
+            padding: 2rem 0;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--light-gray);
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .input-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            #addTodo {
+                justify-content: center;
+            }
+        }
+
+        /*  */
+
+        .delete-btn {
+            background-color: #fee2e2; /* Light red background */
+            color: #dc2626; /* Dark red text */
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .delete-btn:hover {
+            background-color: #fecaca; /* Slightly darker red on hover */
+            color: #b91c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-btn:active {
+            transform: translateY(0);
+        }
+
+        .delete-btn i {
+            font-size: 12px;
+        }
+
+        /* For use in a todo list item */
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 8px;
+        }
+
+        .todo-text {
+            flex-grow: 1;
+        }
+
+
+        /*  */
+
+        .edit-btn {
+            background-color: #e0e7ff; /* Light blue background */
+            color: #4f46e5; /* Indigo text */
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .edit-btn:hover {
+            background-color: #c7d2fe; /* Slightly darker blue on hover */
+            color: #4338ca;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-btn:active {
+            transform: translateY(0);
+        }
+
+        .edit-btn i {
+            font-size: 12px;
+        }
+
+        /* For use in a todo list item */
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 8px;
+        }
+
+        .todo-text {
+            flex-grow: 1;
+        }
+
+        /* Button container for multiple actions */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+
+
+        /*  */
+
+        .todo-checkbox {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Hide default checkbox */
+        .todo-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Custom checkbox design */
+        .checkmark {
+            position: relative;
+            height: 22px;
+            width: 22px;
+            background-color: #fff;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Checkmark animation */
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Checked state styling */
+        .todo-checkbox input:checked ~ .checkmark {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+            animation: checkAnim 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes checkAnim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Show checkmark when checked */
+        .todo-checkbox input:checked ~ .checkmark:after {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Hover effects */
+        .todo-checkbox:hover input ~ .checkmark {
+            border-color: #94a3b8;
+            transform: translateY(-1px);
+        }
+
+        .todo-checkbox:hover input:checked ~ .checkmark {
+            background-color: #4338ca;
+            border-color: #4338ca;
+        }
+
+        /* For todo item integration */
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: #fff;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .todo-item.completed {
+            opacity: 0.8;
+        }
+
+        .todo-text {
+            margin-left: 12px;
+            color: #1e293b;
+            transition: all 0.2s ease;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        /*  */
+
+
+        .time-date-display {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #4a5568;
+    margin: 24px 0;
+    position: relative;
+    animation: fadeInUp 0.5s ease-out forwards;
+    text-align: center;
+}
+
+/* Enhanced HR line */
+.time-date-display hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        rgba(203, 213, 225, 0) 0%,
+        rgba(203, 213, 225, 0.9) 50%,
+        rgba(203, 213, 225, 0) 100%
+    );
+    margin: 20px auto;
+    width: 80%;
+}
+
+/* Common tag styles */
+.time-date-display .time,
+.time-date-display .date {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Time pill */
+.time-date-display .time {
+    color: #4338ca;
+    background: rgba(99, 102, 241, 0.12);
+}
+
+.time-date-display .time::before {
+    content: "🕒";
+    font-size: 14px;
+    transform: scale(1.1);
+}
+
+/* Date pill */
+.time-date-display .date {
+    color: #334155;
+    background: rgba(100, 116, 139, 0.1);
+}
+
+.time-date-display .date::before {
+    content: "📅";
+    font-size: 14px;
+    transform: scale(1.1);
+}
+
+/* Smooth fade animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Todo List</h1>
+            <button id="viewProfile">
+                <i class="fas fa-user-circle"></i>
+                Profile
+            </button>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="todo" placeholder="Add a new task...">
+            <button id="addTodo">
+                <i class="fas fa-plus"></i>
+                Add
+            </button>
+        </div>
+
+        <div id="todo-list">
+            <ul id="list">
+                <!-- Todo items will be added here dynamically -->
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <p>No tasks yet. Add your first todo!</p>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="todo.js" type="module"></script>
+</body>
+</html>
